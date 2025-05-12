@@ -3,20 +3,34 @@ import Client from "./Client";
 import Editor from "./Editor";
 import { useEffect } from "react";
 import { initSocket } from "../socket";
-import { useLocation, useParams } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { useRef } from "react";
 
 const EditorPage = () => {
   const socketRef = useRef(null);
   const location = useLocation();
   const { roomId } = useParams();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const init = async () => {
-
       socketRef.current = await initSocket();
-      socketRef.current.on('connect_error',(err) =>{ handleError(err)});
-      socketRef.current.on('connect_failed',(err) =>{ handleError(err)})
-      const 
+      socketRef.current.on("connect_error", (err) => {
+        handleError(err);
+      });
+      socketRef.current.on("connect_failed", (err) => {
+        handleError(err);
+      });
+      const handleError = (e) => {
+        console.log("socket error =>", e);
+        toast.error("Socket connecttion failed");
+        navigate("/");
+      };
       socketRef.current.emit("join", {
         roomId,
         username: location.state?.username,
@@ -34,6 +48,10 @@ const EditorPage = () => {
       username: "setu",
     },
   ]);
+
+  if (!location.state) {
+    return <Navigate to="/" />;
+  }
   return (
     <div className="w-full min-h-screen flex flex-col">
       <div className="flex flex-grow">
