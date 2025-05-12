@@ -1,10 +1,22 @@
-import { Button } from "@/components/ui/button";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import EditorPage from "./components/EditorPage";
+import Home from "./components/Home";
 
 function App() {
+  const appRouter = createBrowserRouter([
+    {
+      path: "/",
+      element: <Home />,
+    },
+    {
+      path: "/editor/:roomId",
+      element: <EditorPage />,
+    },
+  ]);
   return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
-    </div>
+    <>
+      <RouterProvider router={appRouter} />
+    </>
   );
 }
 
