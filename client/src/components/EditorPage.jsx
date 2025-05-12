@@ -15,6 +15,7 @@ import { toast } from "sonner";
 const EditorPage = () => {
   const [clients, setClients] = useState([]);
   const socketRef = useRef(null);
+  const codeRef = useRef(null);
   const location = useLocation();
   const { roomId } = useParams();
   const navigate = useNavigate();
@@ -72,6 +73,20 @@ const EditorPage = () => {
   if (!location.state) {
     return <Navigate to="/" />;
   }
+
+  const copyRoomId = async () => {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      toast.success("roomId is copied");
+    } catch (error) {
+      console.log(error);
+      toast.error("unable to copy roomId");
+    }
+  };
+
+  const leaveRoomId = () => {
+    navigate("/");
+  };
   return (
     <div className="w-full min-h-screen flex flex-col">
       <div className="flex flex-grow">
@@ -97,10 +112,16 @@ const EditorPage = () => {
 
           {/* Buttons */}
           <div className="mt-auto mb-3 space-y-2">
-            <button className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md">
+            <button
+              onClick={copyRoomId}
+              className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
+            >
               Copy Room ID
             </button>
-            <button className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md">
+            <button
+              onClick={leaveRoomId}
+              className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-md"
+            >
               Leave Room
             </button>
           </div>
@@ -125,6 +146,7 @@ const EditorPage = () => {
           <Editor
             socketRef={socketRef}
             roomId={roomId}
+            onCodeChange={(code) => (codeRef.current = code)}
           />
         </div>
       </div>

@@ -36,14 +36,42 @@ io.on("connection", (socket) => {
   socket.on("join", ({ roomId, username }) => {
     userSocketMap[socket.id] = username;
     socket.join(roomId);
+
     const clients = getAllConnectedClients(roomId);
-    clients.forEach(({ socketId }) => {
-      io.to(socketId).emit("joined", {
-        clients,
-        username,
+
+    // Send the list only to the newly joined user
+    io.to(socket.id).emit("joined", {
+      clients,
+      username,
+      socketId: socket.id,
+    });
+
+    // Notify others (except the newly joined)
+    socket.in(roomId).emit("user-joined", {
+      username,
+      socketId: socket.id,
+    });
+  });
+
+  socket.on("code-change", ({ roomId, code }) => {
+    socket.in(roomId).emit("code-change", { code });
+  });
+
+  // // new user se past code dekha sakta hai
+  socket.on("sync-code", ({ socketId, code }) => {
+    io.to(socketId).emit("sync-code", { code });
+  });
+
+  socket.on("disconnecting", () => {
+    const rooms = [...socket.rooms];
+    rooms.forEach((roomId) => {
+      socket.in(roomId).emit("disconnected", {
         socketId: socket.id,
+        username: userSocketMap[socket.id],
       });
     });
+    delete userSocketMap[socket.id];
+    socket.leave();
   });
 });
 
