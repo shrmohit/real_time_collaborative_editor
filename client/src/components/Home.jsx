@@ -1,16 +1,28 @@
 import { useState } from "react";
 import { v4 as uuid } from "uuid";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [roomId, setRoomId] = useState("");
   const [username, setUsername] = useState("");
+  const navigate = useNavigate();
 
   const generateRoomId = (e) => {
     e.preventDefault();
     const id = uuid();
     setRoomId(id);
     toast.success("RoomId is generated");
+  };
+
+  const joinRoom = () => {
+    if (!roomId || !username) {
+      toast.error("both field required");
+      return;
+    }
+    // navigate
+    navigate(`/editor/${roomId}`, { state: { username } });
+    toast.success("Room is created");
   };
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-[#1c1e29]">
@@ -40,7 +52,10 @@ const Home = () => {
                 className="w-full p-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
             </div>
-            <button className="w-full cursor-pointer bg-green-500 hover:bg-green-600 text-white text-lg py-3 rounded-md transition duration-300">
+            <button
+              onClick={joinRoom}
+              className="w-full cursor-pointer bg-green-500 hover:bg-green-600 text-white text-lg py-3 rounded-md transition duration-300"
+            >
               JOIN
             </button>
             <p className="mt-4 text-white">
