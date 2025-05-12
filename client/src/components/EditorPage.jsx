@@ -10,8 +10,10 @@ import {
   useParams,
 } from "react-router-dom";
 import { useRef } from "react";
+import { toast } from "sonner";
 
 const EditorPage = () => {
+  const [clients, setClients] = useState([]);
   const socketRef = useRef(null);
   const location = useLocation();
   const { roomId } = useParams();
@@ -20,6 +22,7 @@ const EditorPage = () => {
   useEffect(() => {
     const init = async () => {
       socketRef.current = await initSocket();
+      //error check
       socketRef.current.on("connect_error", (err) => {
         handleError(err);
       });
@@ -35,19 +38,16 @@ const EditorPage = () => {
         roomId,
         username: location.state?.username,
       });
+      // get username or id
+      socketRef.current.on("joined", ({ clients, username, socketId }) => {
+        if (username !== location.state?.username) {
+          toast.success(`${username} joined`);
+        }
+        setClients(clients);
+      });
     };
     init();
   }, []);
-  const [clients, setClients] = useState([
-    {
-      socketId: 1,
-      username: "mohit",
-    },
-    {
-      socketId: 2,
-      username: "setu",
-    },
-  ]);
 
   if (!location.state) {
     return <Navigate to="/" />;
@@ -57,12 +57,6 @@ const EditorPage = () => {
       <div className="flex flex-grow">
         {/* Client panel */}
         <div className="w-full md:w-1/5 bg-gray-900 text-white flex flex-col p-4">
-          {/* <img
-            src="/images/codecast.png"
-            alt="Logo"
-            className="mx-auto mb-2"
-            style={{ maxWidth: "150px", marginTop: "-43px" }}
-          /> */}
           <h1 className="text-center text-2xl font-bold ">Editor</h1>
           <hr className="my-2 mt-12 border-gray-600" />
 

@@ -39,7 +39,7 @@ const Home = () => {
                 type="text"
                 placeholder="ROOM ID"
                 value={roomId}
-                onChange={() => setRoomId(e.target.value)}
+                onChange={(e) => setRoomId(e.target.value)}
                 className="w-full p-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
             </div>

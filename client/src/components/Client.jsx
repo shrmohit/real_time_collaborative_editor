@@ -10,7 +10,7 @@ const Client = ({ username }) => {
           alt={username}
         />
         <AvatarFallback className="bg-green-600 text-white font-medium text-lg">
-          {username.charAt(0).toUpperCase()}
+          {username?.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <span className="ml-2">{username.toString()}</span>
