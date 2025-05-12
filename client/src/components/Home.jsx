@@ -1,4 +1,17 @@
+import { useState } from "react";
+import { v4 as uuid } from "uuid";
+import { toast } from "sonner";
+
 const Home = () => {
+  const [roomId, setRoomId] = useState("");
+  const [username, setUsername] = useState("");
+
+  const generateRoomId = (e) => {
+    e.preventDefault();
+    const id = uuid();
+    setRoomId(id);
+    toast.success("RoomId is generated");
+  };
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-[#1c1e29]">
       <div className="w-full max-w-xl px-4">
@@ -13,6 +26,8 @@ const Home = () => {
               <input
                 type="text"
                 placeholder="ROOM ID"
+                value={roomId}
+                onChange={() => setRoomId(e.target.value)}
                 className="w-full p-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
             </div>
@@ -20,6 +35,8 @@ const Home = () => {
               <input
                 type="text"
                 placeholder="USERNAME"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full p-3 rounded-md bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
             </div>
@@ -28,7 +45,10 @@ const Home = () => {
             </button>
             <p className="mt-4 text-white">
               Don't have a room ID? create{" "}
-              <span className="text-green-400 hover:underline cursor-pointer">
+              <span
+                className="text-green-400 hover:underline cursor-pointer"
+                onClick={generateRoomId}
+              >
                 New Room
               </span>
             </p>
