@@ -39,14 +39,34 @@ const EditorPage = () => {
         username: location.state?.username,
       });
       // get username or id
-      socketRef.current.on("joined", ({ clients, username, socketId }) => {
-        if (username !== location.state?.username) {
-          toast.success(`${username} joined`);
-        }
-        setClients(clients);
+      // When another user joins (but NOT me)
+      socketRef.current.on("user-joined", ({ username, socketId }) => {
+        toast.success(`${username} joined`);
+
+        setClients((prev) => {
+          // Add only if not already present
+          if (prev.find((client) => client.socketId === socketId)) return prev;
+          return [...prev, { username, socketId }];
+        });
+
+        socketRef.current.emit("sync-code", {});
+      });
+
+      //disconnected
+      socketRef.current.on("disconnected", ({ socketId, username }) => {
+        toast.success(`${username} left`);
+        setClients((prev) => {
+          return prev.filter((client) => client.socketId != socketId);
+        });
       });
     };
     init();
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current.off("disconnect");
+      }
+    };
   }, []);
 
   if (!location.state) {
@@ -102,7 +122,10 @@ const EditorPage = () => {
             </select>
           </div> */}
 
-          <Editor />
+          <Editor
+            socketRef={socketRef}
+            roomId={roomId}
+          />
         </div>
       </div>
 

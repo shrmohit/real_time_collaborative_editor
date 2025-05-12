@@ -13,7 +13,7 @@ const Client = ({ username }) => {
           {username?.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
-      <span className="ml-2">{username.toString()}</span>
+      <span className="ml-2">{username?.toString()}</span>
     </div>
   );
 };
